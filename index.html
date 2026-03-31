@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mis Publicaciones</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f3ef;
+    --surface: #ffffff;
+    --border: #e2dfd8;
+    --border-strong: #c8c4bc;
+    --text: #1a1916;
+    --text-muted: #7a776f;
+    --text-faint: #b0ada6;
+    --accent: #2d6a4f;
+    --accent-light: #e8f5ee;
+    --accent-text: #1b4332;
+    --warn: #b5451b;
+    --warn-light: #fdf0eb;
+    --warn-text: #7c2d12;
+    --amber: #92400e;
+    --amber-light: #fef3c7;
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 15px;
+  }
+
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+
+  .logo {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+  }
+
+  .header-actions { display: flex; gap: 8px; align-items: center; }
+
+  .tabs {
+    display: flex;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 3px;
+    gap: 2px;
+  }
+
+  .tab {
+    padding: 5px 14px;
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    border: none;
+    background: transparent;
+    border-radius: 4px;
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+
+  .tab.active {
+    background: var(--surface);
+    color: var(--text);
+    font-weight: 500;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+
+  .btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    padding: 6px 14px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+
+  .btn:hover { background: var(--bg); }
+
+  .btn-primary {
+    background: var(--text);
+    color: var(--surface);
+    border-color: var(--text);
+  }
+  .btn-primary:hover { opacity: 0.85; background: var(--text); }
+
+  .btn-ghost {
+    border-color: transparent;
+    background: transparent;
+    color: var(--text-muted);
+  }
+  .btn-ghost:hover { background: var(--bg); color: var(--text); }
+
+  .btn-sm { padding: 4px 10px; font-size: 12px; }
+
+  main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .toolbar-left { display: flex; gap: 8px; align-items: center; }
+  .toolbar-right { display: flex; gap: 8px; }
+
+  .backup-label {
+    font-size: 12px;
+    color: var(--text-faint);
+    font-family: 'DM Mono', monospace;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 16px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: box-shadow 0.15s;
+  }
+
+  .card:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.07); }
+
+  .card-top {
+    padding: 1rem 1.25rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .card-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .card-title {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.4;
+    flex: 1;
+  }
+
+  .badge {
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    padding: 2px 8px;
+    border-radius: 20px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .badge-done { background: var(--accent-light); color: var(--accent-text); }
+  .badge-wip { background: var(--amber-light); color: var(--amber); }
+  .badge-todo { background: var(--bg); color: var(--text-faint); border: 1px solid var(--border); }
+
+  .card-date {
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    color: var(--text-faint);
+    margin-bottom: 10px;
+  }
+
+  .progress-wrap { margin-bottom: 2px; }
+
+  .progress-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+  }
+
+  .progress-pct {
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    color: var(--text-muted);
+  }
+
+  .progress-count {
+    font-size: 11px;
+    color: var(--text-faint);
+  }
+
+  .bar {
+    height: 3px;
+    background: var(--bg);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width 0.3s ease;
+  }
+
+  .card-body { padding: 0.75rem 1.25rem 1rem; }
+
+  .section-label {
+    font-size: 10px;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin: 10px 0 4px;
+  }
+
+  .section-label:first-child { margin-top: 0; }
+
+  .task {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 4px 0;
+  }
+
+  .task.l1 { padding-left: 16px; }
+  .task.l2 { padding-left: 30px; }
+
+  .check {
+    width: 14px;
+    height: 14px;
+    min-width: 14px;
+    border: 1.5px solid var(--border-strong);
+    border-radius: 3px;
+    cursor: pointer;
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.12s;
+    flex-shrink: 0;
+  }
+
+  .check:hover { border-color: var(--accent); }
+
+  .check.on {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .check.on::after {
+    content: '';
+    display: block;
+    width: 7px;
+    height: 4px;
+    border-left: 1.5px solid white;
+    border-bottom: 1.5px solid white;
+    transform: rotate(-45deg) translateY(-1px);
+  }
+
+  .task-text {
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--text);
+    cursor: pointer;
+    flex: 1;
+  }
+
+  .task-text.done {
+    color: var(--text-faint);
+    text-decoration: line-through;
+  }
+
+  .card-footer {
+    padding: 0.5rem 1.25rem 0.75rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .empty {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--text-muted);
+  }
+
+  .empty-icon {
+    font-size: 32px;
+    margin-bottom: 1rem;
+    opacity: 0.3;
+  }
+
+  .empty h3 {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .empty p { font-size: 13px; line-height: 1.6; }
+
+  /* Modal */
+  .overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.3);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+
+  .overlay.open { display: flex; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+  }
+
+  .modal h2 {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 1rem;
+  }
+
+  .modal p {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+
+  .field { margin-bottom: 1rem; }
+
+  .field label {
+    display: block;
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+    color: var(--text-muted);
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .field input {
+    width: 100%;
+    padding: 8px 10px;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .field input:focus { border-color: var(--accent); }
+
+  .modal-footer {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--text);
+    color: var(--surface);
+    padding: 8px 18px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-family: 'DM Mono', monospace;
+    z-index: 300;
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
+  .toast.show { opacity: 1; }
+
+  @media (max-width: 640px) {
+    header { padding: 0 1rem; }
+    main { padding: 1rem; }
+    .grid { grid-template-columns: 1fr; }
+    .logo { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <span class="logo">Publicaciones</span>
+  <div class="header-actions">
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('youtube')">YouTube</button>
+      <button class="tab" onclick="switchTab('libros')">Libros RRSS</button>
+    </div>
+    <button class="btn btn-primary" onclick="openNew()">+ Nueva</button>
+  </div>
+</header>
+
+<main>
+  <div class="toolbar">
+    <div class="toolbar-left">
+      <span class="backup-label" id="last-export">Sin exportar aún</span>
+    </div>
+    <div class="toolbar-right">
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('file-in').click()">↑ Importar</button>
+      <button class="btn btn-sm" onclick="exportData()">↓ Exportar copia</button>
+      <input type="file" id="file-in" accept=".json" style="display:none" onchange="importFile(event)">
+    </div>
+  </div>
+
+  <div id="content"></div>
+</main>
+
+<!-- Modal nueva publicación -->
+<div class="overlay" id="m-new">
+  <div class="modal">
+    <h2 id="m-title">Nueva publicación</h2>
+    <div class="field">
+      <label>Título</label>
+      <input type="text" id="inp-title" placeholder="Nombre del vídeo o libro..." autocomplete="off">
+    </div>
+    <div class="field">
+      <label>Fecha objetivo de publicación</label>
+      <input type="date" id="inp-date">
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('m-new')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveNew()">Crear</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal importar -->
+<div class="overlay" id="m-import">
+  <div class="modal">
+    <h2>Importar copia de seguridad</h2>
+    <p id="m-import-info"></p>
+    <p>¿Qué quieres hacer con los datos actuales?</p>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('m-import')">Cancelar</button>
+      <button class="btn" style="border-color:#e2a89a;color:var(--warn)" onclick="applyImport('replace')">Reemplazar todo</button>
+      <button class="btn btn-primary" onclick="applyImport('merge')">Combinar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const YT_TASKS = [
+  {id:'g1',label:'Crear vídeo de YouTube',l:0,s:'Producción'},
+  {id:'g1a',label:'Generar idea',l:1},
+  {id:'g1b',label:'Hacer guión',l:1},
+  {id:'g1c',label:'Hacer vídeo de prueba',l:1},
+  {id:'g1d',label:'Subir vídeo de prueba a YouTube',l:1},
+  {id:'g1e',label:'Revisar y aprobar',l:1},
+  {id:'g1g',label:'Edición de vídeo',l:1},
+  {id:'g1gi',label:'Búsqueda y creación de imágenes',l:2},
+  {id:'g1gii',label:'Búsqueda de enlaces de referencia',l:2},
+  {id:'g1giii',label:'Crear miniatura para YouTube',l:2},
+  {id:'g1giv',label:'Crear miniatura para Blog',l:2},
+  {id:'g1gv',label:'Subir vídeo terminado a YouTube',l:2},
+  {id:'g1gvi',label:'Revisar vídeo final',l:2},
+  {id:'g2',label:'Descargar transcripción del vídeo',l:0,s:'Contenido IA'},
+  {id:'g2i1',label:'Título',l:1},
+  {id:'g2i2',label:'Descripción breve para YouTube',l:1},
+  {id:'g2i3',label:'Entrada ~80 caracteres para blog',l:1},
+  {id:'g2i4',label:'Texto de blog (800-1000 caracteres)',l:1},
+  {id:'g2i5',label:'Texto Newsletter (máx 300 caracteres)',l:1},
+  {id:'g2i6',label:'Post RRSS — IG, FB, Comunidad YT',l:1},
+  {id:'g2i7',label:'Mejores momentos para Shorts',l:1},
+  {id:'g3',label:'Redacción del material',l:0,s:'Publicación'},
+  {id:'g3a',label:'Redactar artículo del blog',l:1},
+  {id:'g3b',label:'Redactar Newsletter',l:1},
+  {id:'g3c',label:'Programar fechas de publicación',l:1},
+  {id:'g3ci',label:'Vídeo en YouTube',l:2},
+  {id:'g3cii',label:'Comunidad de YouTube',l:2},
+  {id:'g3ciii',label:'Blog',l:2},
+  {id:'g3civ',label:'Newsletter',l:2},
+  {id:'g3d',label:'Crear posts RRSS — FB e IG',l:1},
+  {id:'g3d1',label:'Crear post Facebook',l:2},
+  {id:'g3d2',label:'Crear post Instagram',l:2},
+  {id:'g3d3',label:'Fijar fecha publicación FB e IG',l:2},
+  {id:'g3e',label:'Shorts',l:1},
+  {id:'g3e1',label:'Crear Shorts para YouTube',l:2},
+  {id:'g3e2',label:'Incluir textos en Shorts',l:2},
+  {id:'g3e3',label:'Programar fecha publicación Shorts',l:2},
+];
+
+const LIB_TASKS = [
+  {id:'l1',label:'Revisar fecha de publicación',l:0,s:'Preparación'},
+  {id:'l2',label:'Tomar texto de publicación',l:0},
+  {id:'l3',label:'Incluir texto en cada RRSS',l:0},
+  {id:'l4',label:'Tomar imagen de publicación',l:0},
+  {id:'l5',label:'Incluir imagen en cada RRSS',l:0},
+  {id:'l6',label:'Programar fecha de publicación',l:0,s:'Publicación'},
+  {id:'l7',label:'Crear post semanal',l:0},
+  {id:'l8',label:'Crear imagen de post semanal',l:0},
+];
+
+let tab = 'youtube';
+let db = {youtube:[], libros:[]};
+let pending = null;
+
+function load() {
+  try {
+    const raw = localStorage.getItem('pub_app_v1');
+    if (raw) db = JSON.parse(raw);
+    const le = localStorage.getItem('pub_last_export');
+    if (le) document.getElementById('last-export').textContent = 'Última copia: ' + le;
+  } catch(e) {}
+  render();
+}
+
+function save() {
+  try { localStorage.setItem('pub_app_v1', JSON.stringify(db)); } catch(e) {}
+}
+
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+function switchTab(t) {
+  tab = t;
+  document.querySelectorAll('.tab').forEach((el,i) => {
+    el.classList.toggle('active', (i===0&&t==='youtube')||(i===1&&t==='libros'));
+  });
+  render();
+}
+
+function openNew() {
+  document.getElementById('m-title').textContent = tab==='youtube' ? 'Nuevo vídeo de YouTube' : 'Nueva publicación de libro';
+  document.getElementById('inp-title').value = '';
+  document.getElementById('inp-date').value = '';
+  document.getElementById('m-new').classList.add('open');
+  setTimeout(() => document.getElementById('inp-title').focus(), 100);
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+function saveNew() {
+  const title = document.getElementById('inp-title').value.trim();
+  const date = document.getElementById('inp-date').value;
+  if (!title) { document.getElementById('inp-title').focus(); return; }
+  const tasks = (tab==='youtube' ? YT_TASKS : LIB_TASKS).map(t => ({...t, done:false}));
+  db[tab].unshift({ id: Date.now().toString(), title, date, tasks, created: new Date().toISOString() });
+  save();
+  closeModal('m-new');
+  render();
+}
+
+function toggle(pubId, taskId) {
+  const pub = db[tab].find(p => p.id===pubId);
+  if (!pub) return;
+  const t = pub.tasks.find(t => t.id===taskId);
+  if (t) t.done = !t.done;
+  save();
+  renderCard(pub);
+}
+
+function del(pubId) {
+  if (!confirm('¿Eliminar esta publicación?')) return;
+  db[tab] = db[tab].filter(p => p.id!==pubId);
+  save();
+  render();
+}
+
+function exportData() {
+  const total = db.youtube.length + db.libros.length;
+  if (!total) { toast('No hay datos que exportar'); return; }
+  const now = new Date();
+  const dateStr = now.toISOString().slice(0,10);
+  const blob = new Blob([JSON.stringify({version:1, exportedAt:now.toISOString(), data:db}, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'publicaciones_backup_' + dateStr + '.json';
+  a.click(); URL.revokeObjectURL(url);
+  const label = dateStr + ' ' + now.toTimeString().slice(0,5);
+  localStorage.setItem('pub_last_export', label);
+  document.getElementById('last-export').textContent = 'Última copia: ' + label;
+  toast('Copia descargada');
+}
+
+function importFile(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  e.target.value = '';
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const parsed = JSON.parse(ev.target.result);
+      if (!parsed.data?.youtube || !parsed.data?.libros) throw new Error();
+      pending = parsed.data;
+      const ytN = parsed.data.youtube.length, libN = parsed.data.libros.length;
+      const ytC = db.youtube.length, libC = db.libros.length;
+      document.getElementById('m-import-info').textContent =
+        `El archivo tiene ${ytN} vídeo(s) de YouTube y ${libN} publicación(es) de libros. Tú tienes ahora ${ytC} y ${libC} respectivamente.`;
+      document.getElementById('m-import').classList.add('open');
+    } catch { toast('Archivo no válido'); }
+  };
+  reader.readAsText(file);
+}
+
+function applyImport(mode) {
+  if (!pending) return;
+  if (mode === 'replace') {
+    db = pending;
+    toast('Datos reemplazados');
+  } else {
+    let added = 0;
+    ['youtube','libros'].forEach(k => {
+      const ids = new Set(db[k].map(p => p.id));
+      const news = pending[k].filter(p => !ids.has(p.id));
+      db[k] = [...db[k], ...news];
+      added += news.length;
+    });
+    toast(`Combinado: ${added} elemento(s) añadido(s)`);
+  }
+  pending = null;
+  save();
+  closeModal('m-import');
+  render();
+}
+
+function prog(pub) {
+  const total = pub.tasks.length;
+  const done = pub.tasks.filter(t => t.done).length;
+  return { total, done, pct: total ? Math.round(done/total*100) : 0 };
+}
+
+function badgeHtml(pct) {
+  if (pct===100) return '<span class="badge badge-done">completado</span>';
+  if (pct===0) return '<span class="badge badge-todo">sin iniciar</span>';
+  return '<span class="badge badge-wip">en progreso</span>';
+}
+
+function fmtDate(d) {
+  if (!d) return '';
+  const [y,m,day] = d.split('-');
+  return `→ ${day}/${m}/${y}`;
+}
+
+function renderCard(pub) {
+  const el = document.getElementById('c-' + pub.id);
+  if (!el) return;
+  const {total, done, pct} = prog(pub);
+
+  let sections = {}, sec = '';
+  pub.tasks.forEach(t => {
+    if (t.s) sec = t.s;
+    if (!sections[sec]) sections[sec] = [];
+    sections[sec].push(t);
+  });
+
+  let tasksHtml = '';
+  for (const [s, tasks] of Object.entries(sections)) {
+    tasksHtml += `<div class="section-label">${s}</div>`;
+    tasks.forEach(t => {
+      const lc = t.l===2 ? 'l2' : t.l===1 ? 'l1' : '';
+      tasksHtml += `<div class="task ${lc}">
+        <div class="check ${t.done?'on':''}" onclick="toggle('${pub.id}','${t.id}')"></div>
+        <span class="task-text ${t.done?'done':''}" onclick="toggle('${pub.id}','${t.id}')">${t.label}</span>
+      </div>`;
+    });
+  }
+
+  el.innerHTML = `
+    <div class="card-top">
+      <div class="card-meta">
+        <div class="card-title">${pub.title}</div>
+        ${badgeHtml(pct)}
+      </div>
+      ${pub.date ? `<div class="card-date">${fmtDate(pub.date)}</div>` : ''}
+      <div class="progress-wrap">
+        <div class="progress-row">
+          <span class="progress-pct">${pct}%</span>
+          <span class="progress-count">${done}/${total}</span>
+        </div>
+        <div class="bar"><div class="bar-fill" style="width:${pct}%"></div></div>
+      </div>
+    </div>
+    <div class="card-body">${tasksHtml}</div>
+    <div class="card-footer">
+      <button class="btn btn-ghost btn-sm" style="color:#b0ada6" onclick="del('${pub.id}')">Eliminar</button>
+    </div>`;
+}
+
+function render() {
+  const list = db[tab] || [];
+  const ct = document.getElementById('content');
+  if (!list.length) {
+    const tipo = tab==='youtube' ? 'vídeo de YouTube' : 'publicación de libro';
+    ct.innerHTML = `<div class="empty">
+      <div class="empty-icon">◻</div>
+      <h3>Ninguna publicación todavía</h3>
+      <p>Pulsa "+ Nueva" para crear tu primer ${tipo}.</p>
+    </div>`;
+    return;
+  }
+  ct.innerHTML = `<div class="grid">${list.map(p=>`<div class="card" id="c-${p.id}"></div>`).join('')}</div>`;
+  list.forEach(p => renderCard(p));
+}
+
+document.querySelectorAll('.overlay').forEach(el => {
+  el.addEventListener('click', e => { if (e.target===el) el.classList.remove('open'); });
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key==='Escape') document.querySelectorAll('.overlay.open').forEach(el=>el.classList.remove('open'));
+  if (e.key==='Enter' && document.getElementById('m-new').classList.contains('open')) saveNew();
+});
+
+load();
+</script>
+</body>
+</html>
