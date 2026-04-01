@@ -586,6 +586,7 @@ function openNew() {
   document.getElementById('m-title').textContent = tab==='youtube' ? 'Nuevo vídeo de YouTube' : 'Nueva publicación de libro';
   document.getElementById('inp-title').value = '';
   document.getElementById('inp-date').value = '';
+  delete document.getElementById('m-new').dataset.editId;
   document.getElementById('m-new').classList.add('open');
   setTimeout(() => document.getElementById('inp-title').focus(), 100);
 }
@@ -596,6 +597,16 @@ function saveNew() {
   const title = document.getElementById('inp-title').value.trim();
   const date = document.getElementById('inp-date').value;
   if (!title) { document.getElementById('inp-title').focus(); return; }
+  const editId = document.getElementById('m-new').dataset.editId;
+  if (editId) {
+    const pub = db[tab].find(p => p.id===editId);
+    if (pub) { pub.title = title; pub.date = date; }
+    delete document.getElementById('m-new').dataset.editId;
+    save();
+    closeModal('m-new');
+    renderCard(pub);
+    return;
+  }
   const tasks = (tab==='youtube' ? YT_TASKS : LIB_TASKS).map(t => ({...t, done:false}));
   const newId = Date.now().toString();
   db[tab].unshift({ id: newId, title, date, tasks, archived: false, created: new Date().toISOString() });
@@ -620,6 +631,17 @@ function archive(pubId) {
   pub.archived = !pub.archived;
   save();
   renderCard(pub);
+}
+
+function editPub(pubId) {
+  const pub = db[tab].find(p => p.id===pubId);
+  if (!pub) return;
+  document.getElementById('m-title').textContent = 'Editar publicación';
+  document.getElementById('inp-title').value = pub.title;
+  document.getElementById('inp-date').value = pub.date || '';
+  document.getElementById('m-new').dataset.editId = pubId;
+  document.getElementById('m-new').classList.add('open');
+  setTimeout(() => document.getElementById('inp-title').focus(), 100);
 }
 
 function del(pubId) {
@@ -752,6 +774,7 @@ function renderCard(pub) {
     <div class="card-body">
       <div class="card-tasks">${tasksHtml}</div>
       <div class="card-footer">
+        <button class="btn btn-ghost btn-sm" onclick="editPub('${pub.id}')">Editar</button>
         <button class="btn btn-ghost btn-sm" onclick="archive('${pub.id}')">${pub.archived?'Desarchivar':'Archivar'}</button>
         <button class="btn btn-ghost btn-sm" style="color:var(--warn-text)" onclick="del('${pub.id}')">Eliminar</button>
       </div>
@@ -759,7 +782,12 @@ function renderCard(pub) {
 }
 
 function render() {
-  const list = db[tab] || [];
+  const list = [...(db[tab] || [])].sort((a,b) => {
+    if (!a.date && !b.date) return 0;
+    if (!a.date) return 1;
+    if (!b.date) return -1;
+    return a.date.localeCompare(b.date);
+  });
   const ct = document.getElementById('content');
   if (!list.length) {
     const tipo = tab==='youtube'?'vídeo de YouTube':'publicación de libro';
