@@ -21,6 +21,8 @@
     --warn-text: #e8957e;
     --amber: #c49a3c;
     --amber-light: #2a2210;
+    --purple: #8b7fd4;
+    --purple-light: #22203a;
     --radius: 10px;
     --radius-sm: 6px;
   }
@@ -57,7 +59,7 @@
     text-transform: uppercase;
   }
 
-  .header-actions { display: flex; gap: 8px; align-items: center; }
+  .header-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 
   .tabs {
     display: flex;
@@ -119,6 +121,13 @@
 
   .btn-sm { padding: 4px 10px; font-size: 12px; }
 
+  .btn-purple {
+    background: var(--purple-light);
+    color: var(--purple);
+    border-color: var(--purple);
+  }
+  .btn-purple:hover { opacity: 0.85; }
+
   main {
     max-width: 1200px;
     margin: 0 auto;
@@ -143,6 +152,7 @@
     font-family: 'DM Mono', monospace;
   }
 
+  /* PROJECT GRID */
   .grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
@@ -159,10 +169,7 @@
 
   .card:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.2); }
 
-  .card.archived {
-    opacity: 0.5;
-    border-style: dashed;
-  }
+  .card.archived { opacity: 0.5; border-style: dashed; }
 
   .card-header {
     padding: 0.85rem 1.25rem;
@@ -227,21 +234,8 @@
   .badge-todo { background: var(--bg); color: var(--text-faint); border: 1px solid var(--border-strong); }
   .badge-arch { background: var(--bg); color: var(--text-faint); border: 1px solid var(--border); font-style: italic; }
 
-  .mini-bar {
-    width: 50px;
-    height: 3px;
-    background: var(--bg);
-    border-radius: 2px;
-    overflow: hidden;
-    flex-shrink: 0;
-  }
-
-  .mini-bar-fill {
-    height: 100%;
-    background: var(--accent);
-    border-radius: 2px;
-    transition: width 0.3s;
-  }
+  .mini-bar { width: 50px; height: 3px; background: var(--bg); border-radius: 2px; overflow: hidden; flex-shrink: 0; }
+  .mini-bar-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.3s; }
 
   .card-body { display: none; border-top: 1px solid var(--border); }
   .card.open .card-body { display: block; }
@@ -259,53 +253,30 @@
 
   .section-label:first-child { margin-top: 0; }
 
-  .task {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    padding: 4px 0;
-  }
-
+  .task { display: flex; align-items: flex-start; gap: 8px; padding: 4px 0; }
   .task.l1 { padding-left: 16px; }
   .task.l2 { padding-left: 30px; }
 
   .check {
-    width: 14px;
-    height: 14px;
-    min-width: 14px;
+    width: 14px; height: 14px; min-width: 14px;
     border: 1.5px solid var(--border-strong);
     border-radius: 3px;
-    cursor: pointer;
-    margin-top: 2px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.12s;
-    flex-shrink: 0;
+    cursor: pointer; margin-top: 2px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.12s; flex-shrink: 0;
   }
 
   .check:hover { border-color: var(--accent); }
-
   .check.on { background: var(--accent); border-color: var(--accent); }
-
   .check.on::after {
-    content: '';
-    display: block;
-    width: 7px;
-    height: 4px;
+    content: ''; display: block;
+    width: 7px; height: 4px;
     border-left: 1.5px solid #141414;
     border-bottom: 1.5px solid #141414;
     transform: rotate(-45deg) translateY(-1px);
   }
 
-  .task-text {
-    font-size: 13px;
-    line-height: 1.5;
-    color: var(--text);
-    cursor: pointer;
-    flex: 1;
-  }
-
+  .task-text { font-size: 13px; line-height: 1.5; color: var(--text); cursor: pointer; flex: 1; }
   .task-text.done { color: var(--text-faint); text-decoration: line-through; }
 
   .card-footer {
@@ -314,8 +285,108 @@
     display: flex;
     justify-content: flex-end;
     gap: 6px;
+    flex-wrap: wrap;
   }
 
+  /* IDEAS TAB */
+  .ideas-list { display: flex; flex-direction: column; gap: 8px; }
+
+  .idea-row {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: box-shadow 0.15s;
+    cursor: grab;
+  }
+
+  .idea-row:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.2); }
+  .idea-row.dragging { opacity: 0.4; cursor: grabbing; }
+  .idea-row.drag-over { border-color: var(--purple); }
+
+  .idea-header {
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    user-select: none;
+  }
+
+  .drag-handle {
+    color: var(--text-faint);
+    font-size: 14px;
+    cursor: grab;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+
+  .idea-title {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.4;
+    cursor: pointer;
+  }
+
+  .idea-body {
+    display: none;
+    border-top: 1px solid var(--border);
+    padding: 1rem;
+  }
+
+  .idea-row.open .idea-body { display: block; }
+  .idea-row.open .chevron { transform: rotate(90deg); }
+
+  .idea-field { margin-bottom: 0.75rem; }
+
+  .idea-field label {
+    display: block;
+    font-size: 10px;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-bottom: 5px;
+  }
+
+  .idea-field textarea,
+  .idea-field input[type="text"] {
+    width: 100%;
+    padding: 7px 10px;
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+    color: var(--text);
+    outline: none;
+    resize: vertical;
+    line-height: 1.5;
+    transition: border-color 0.15s;
+  }
+
+  .idea-field textarea:focus,
+  .idea-field input[type="text"]:focus { border-color: var(--purple); }
+
+  .idea-links { display: flex; flex-direction: column; gap: 6px; margin-bottom: 6px; }
+
+  .link-row { display: flex; gap: 6px; align-items: center; }
+
+  .link-row input { flex: 1; }
+
+  .idea-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.75rem;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .idea-footer-left { display: flex; gap: 6px; }
+  .idea-footer-right { display: flex; gap: 6px; }
+
+  /* Empty state */
   .empty {
     text-align: center;
     padding: 4rem 2rem;
@@ -323,16 +394,10 @@
   }
 
   .empty-icon { font-size: 32px; margin-bottom: 1rem; opacity: 0.3; }
-
-  .empty h3 {
-    font-size: 16px;
-    font-weight: 500;
-    color: var(--text);
-    margin-bottom: 6px;
-  }
-
+  .empty h3 { font-size: 16px; font-weight: 500; color: var(--text); margin-bottom: 6px; }
   .empty p { font-size: 13px; line-height: 1.6; }
 
+  /* Modals */
   .overlay {
     display: none;
     position: fixed;
@@ -357,13 +422,7 @@
   }
 
   .modal h2 { font-size: 16px; font-weight: 500; margin-bottom: 1rem; }
-
-  .modal p {
-    font-size: 13px;
-    color: var(--text-muted);
-    line-height: 1.6;
-    margin-bottom: 1rem;
-  }
+  .modal p { font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-bottom: 1rem; }
 
   .field { margin-bottom: 1rem; }
 
@@ -400,6 +459,7 @@
     flex-wrap: wrap;
   }
 
+  /* Toast */
   .toast {
     position: fixed;
     bottom: 1.5rem;
@@ -436,8 +496,9 @@
     <div class="tabs">
       <button class="tab active" onclick="switchTab('youtube')">YouTube</button>
       <button class="tab" onclick="switchTab('libros')">Libros RRSS</button>
+      <button class="tab" onclick="switchTab('ideas')">Ideas</button>
     </div>
-    <button class="btn btn-primary" onclick="openNew()">+ Nueva</button>
+    <button class="btn btn-primary" id="btn-new" onclick="openNew()">+ Nueva</button>
   </div>
 </header>
 
@@ -455,6 +516,7 @@
   <div id="content"></div>
 </main>
 
+<!-- Modal nueva publicación / editar -->
 <div class="overlay" id="m-new">
   <div class="modal">
     <h2 id="m-title">Nueva publicación</h2>
@@ -468,11 +530,12 @@
     </div>
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal('m-new')">Cancelar</button>
-      <button class="btn btn-primary" onclick="saveNew()">Crear</button>
+      <button class="btn btn-primary" onclick="saveNew()">Guardar</button>
     </div>
   </div>
 </div>
 
+<!-- Modal importar -->
 <div class="overlay" id="m-import">
   <div class="modal">
     <h2>Importar copia de seguridad</h2>
@@ -540,15 +603,80 @@ const LIB_TASKS = [
   {id:'l8',label:'Crear imagen de post semanal',l:0},
 ];
 
+const SEED_IDEAS = [
+  'ECM - Mi libro explicado y eBook',
+  'La enfermedad de la razón',
+  'El Científico Japonés que vio más allá de la REALIDAD… y luego lo MATARON',
+  '5 leyes de los manipuladores',
+  'Sin perfección nunca tendrás Libertad',
+  'Los mediocres con suerte están ahí para rebajar tu frecuencia',
+  'El silencio de la mente. Meditación. Vacío y plenitud. Soy.',
+  'Estados: lo que dices puede ser teatro, lo que eres, nunca',
+  'Ser. Lo que eres es la clave. Descubrirlo y una vez descubierto debes trabajar por ello.',
+  'Mi fuerte es tomar a las personas y hacerlas mejor de lo que son',
+  'Personas de Alto Nivel',
+  'Personas de valor',
+  'Cuando después de un conflicto o una derrota haces algo para volver a estar al mando, no eres menos, sino más fuerte por haber pasado por lo que has pasado',
+  'Primado positivo y negativo',
+  'El Desafío de la Oración',
+  'IA como sistema de programación mental',
+  'Vídeo con muchas ideas a recoger',
+  'El desafío de la Ley de la atracción, tu falta de honestidad.',
+  '«Si sigues haciendo lo que estás haciendo, seguirás obteniendo lo que estás obteniendo. Para conseguir algo nuevo o diferente, debes hacer algo nuevo o diferente».',
+  '¿Qué tal si cuando ves al otro, lo aceptas como es, sin rotularlo?',
+  'Esto es falso => Porque la definición de la dirección y sentido de la vida no llega de repente, por iluminación, como un flash (La Brújula Interior).',
+  'Cuando llega el espíritu se hace real el soy y desaparece el yo del mundo, por tanto, también cualquier cosa que hagas o puedas hacer en él.',
+  'Este es un vídeo que ya en el inicio es para generar un video',
+  'Experimento Milgram, 67%, falta de moralidad',
+  'Tres elementos que son joyas de la vida: la perseverancia, la ilusión y la confianza en uno mismo.',
+  'Antes de morir, por favor escuchen (Andrew Georges - Asiriologo)',
+  'El apego - Enamoramiento',
+  'Cuando algo por dentro te empuje, aunque no lo entiendas, y más aun sino lo entiendes, déjalo que emerja y observa qué sucede',
+  'El problema no es la complejidad de la idea, sino que nadie quiere mirar al frente',
+  'Es más fácil, no respetar más porque no te respetas a ti mismo',
+  'Las personas no piensan, solo quieren creer',
+  'Tucídides - La felicidad del Mal',
+  'Vejez - Telómeros',
+  'Huxley Dijo lo único que puedes mejorar es tu propio ser',
+  '«Mi deber es Ser la Consciencia de la Prosperidad Ahora».',
+  'Cada acto, cada palabra, cada pensamiento no es solo lo que dejas detrás de ti según avanzas por la vida, también es lo que arrojas hacia adelante en el camino que vas a tener que recorrer',
+  'La ausencia de evidencia no es la evidencia de ausencia',
+  'Como vivir mejor cada uno de tus días',
+  '¿Quieres saber si eres libre? Mira lo que no puedes cuestionar. Eso te posee.',
+  'No vayas al padre sin antes haber hecho la paz con tu hermano',
+  'The first step to recovery is accepting who you are…',
+  'Look, I know people use reincarnation as an excuse to ignore their instincts, to throw every opportunity for happiness away.',
+  'Tesla creencias receptor creador',
+  'Guárdalo en el corazón (en diario de Nebo)',
+  'La meditación es sólo eso, reavivar el vínculo entre el ser que sueña y el Ser que Es.',
+  'Elevar la Frecuencia',
+  'Gratitud profunda y cambio de vida',
+];
+
 let tab = 'youtube';
-let db = {youtube:[], libros:[]};
+let db = { youtube: [], libros: [], ideas: [] };
 let pending = null;
 let openCards = new Set();
+let openIdeas = new Set();
+let dragSrc = null;
 
 function load() {
   try {
     const raw = localStorage.getItem('pub_app_v1');
-    if (raw) db = JSON.parse(raw);
+    if (raw) {
+      db = JSON.parse(raw);
+      if (!db.ideas) db.ideas = [];
+    } else {
+      // First load: seed ideas
+      db.ideas = SEED_IDEAS.map((title, i) => ({
+        id: 'idea_' + i,
+        title,
+        notes: '',
+        links: [],
+        created: new Date().toISOString()
+      }));
+      save();
+    }
     const le = localStorage.getItem('pub_last_export');
     if (le) document.getElementById('last-export').textContent = 'Última copia: ' + le;
   } catch(e) {}
@@ -569,11 +697,14 @@ function toast(msg) {
 function switchTab(t) {
   tab = t;
   openCards.clear();
-  document.querySelectorAll('.tab').forEach((el,i) => {
-    el.classList.toggle('active', (i===0&&t==='youtube')||(i===1&&t==='libros'));
+  document.querySelectorAll('.tab').forEach((el, i) => {
+    el.classList.toggle('active', (i===0&&t==='youtube')||(i===1&&t==='libros')||(i===2&&t==='ideas'));
   });
+  document.getElementById('btn-new').textContent = t === 'ideas' ? '+ Idea' : '+ Nueva';
   render();
 }
+
+// ── PROJECT FUNCTIONS ──────────────────────────────────────
 
 function toggleCard(pubId) {
   if (openCards.has(pubId)) openCards.delete(pubId);
@@ -583,6 +714,7 @@ function toggleCard(pubId) {
 }
 
 function openNew() {
+  if (tab === 'ideas') { openNewIdea(); return; }
   document.getElementById('m-title').textContent = tab==='youtube' ? 'Nuevo vídeo de YouTube' : 'Nueva publicación de libro';
   document.getElementById('inp-title').value = '';
   document.getElementById('inp-date').value = '';
@@ -602,18 +734,13 @@ function saveNew() {
     const pub = db[tab].find(p => p.id===editId);
     if (pub) { pub.title = title; pub.date = date; }
     delete document.getElementById('m-new').dataset.editId;
-    save();
-    closeModal('m-new');
-    renderCard(pub);
-    return;
+    save(); closeModal('m-new'); renderCard(pub); return;
   }
   const tasks = (tab==='youtube' ? YT_TASKS : LIB_TASKS).map(t => ({...t, done:false}));
   const newId = Date.now().toString();
   db[tab].unshift({ id: newId, title, date, tasks, archived: false, created: new Date().toISOString() });
   openCards.add(newId);
-  save();
-  closeModal('m-new');
-  render();
+  save(); closeModal('m-new'); render();
 }
 
 function toggle(pubId, taskId) {
@@ -621,16 +748,14 @@ function toggle(pubId, taskId) {
   if (!pub) return;
   const t = pub.tasks.find(t => t.id===taskId);
   if (t) t.done = !t.done;
-  save();
-  renderCard(pub);
+  save(); renderCard(pub);
 }
 
 function archive(pubId) {
   const pub = db[tab].find(p => p.id===pubId);
   if (!pub) return;
   pub.archived = !pub.archived;
-  save();
-  renderCard(pub);
+  save(); renderCard(pub);
 }
 
 function editPub(pubId) {
@@ -647,17 +772,126 @@ function editPub(pubId) {
 function del(pubId) {
   if (!confirm('¿Eliminar definitivamente? No se puede deshacer.')) return;
   db[tab] = db[tab].filter(p => p.id!==pubId);
-  openCards.delete(pubId);
-  save();
-  render();
+  openCards.delete(pubId); save(); render();
 }
 
+// ── IDEAS FUNCTIONS ────────────────────────────────────────
+
+function openNewIdea() {
+  const id = 'idea_' + Date.now();
+  db.ideas.unshift({ id, title: 'Nueva idea', notes: '', links: [], created: new Date().toISOString() });
+  openIdeas.add(id);
+  save(); render();
+  // focus title after render
+  setTimeout(() => {
+    const el = document.getElementById('ititle-' + id);
+    if (el) { el.focus(); el.select(); }
+  }, 50);
+}
+
+function toggleIdea(id) {
+  // save current state before toggling
+  saveIdeaFields(id);
+  if (openIdeas.has(id)) openIdeas.delete(id);
+  else openIdeas.add(id);
+  const el = document.getElementById('idea-' + id);
+  if (el) el.classList.toggle('open', openIdeas.has(id));
+}
+
+function saveIdeaFields(id) {
+  const idea = db.ideas.find(i => i.id===id);
+  if (!idea) return;
+  const tEl = document.getElementById('ititle-' + id);
+  const nEl = document.getElementById('inotes-' + id);
+  if (tEl) idea.title = tEl.value.trim() || idea.title;
+  if (nEl) idea.notes = nEl.value;
+  // links
+  const linkEls = document.querySelectorAll('.ilink-' + id);
+  idea.links = Array.from(linkEls).map(el => el.value.trim()).filter(Boolean);
+  save();
+}
+
+function addLink(id) {
+  const idea = db.ideas.find(i => i.id===id);
+  if (!idea) return;
+  saveIdeaFields(id);
+  idea.links.push('');
+  save(); renderIdea(idea);
+  setTimeout(() => {
+    const els = document.querySelectorAll('.ilink-' + id);
+    if (els.length) els[els.length-1].focus();
+  }, 30);
+}
+
+function removeLink(id, idx) {
+  const idea = db.ideas.find(i => i.id===id);
+  if (!idea) return;
+  saveIdeaFields(id);
+  idea.links.splice(idx, 1);
+  save(); renderIdea(idea);
+}
+
+function deleteIdea(id) {
+  if (!confirm('¿Eliminar esta idea? No se puede deshacer.')) return;
+  db.ideas = db.ideas.filter(i => i.id!==id);
+  openIdeas.delete(id); save(); render();
+}
+
+function convertToProject(id) {
+  const idea = db.ideas.find(i => i.id===id);
+  if (!idea) return;
+  saveIdeaFields(id);
+  const tasks = YT_TASKS.map(t => ({...t, done:false}));
+  const newId = Date.now().toString();
+  db.youtube.unshift({ id: newId, title: idea.title, date: '', tasks, archived: false, created: new Date().toISOString() });
+  db.ideas = db.ideas.filter(i => i.id!==id);
+  openIdeas.delete(id); save();
+  toast('Idea convertida en proyecto YouTube');
+  switchTab('youtube');
+}
+
+// ── DRAG & DROP (Ideas) ────────────────────────────────────
+
+function onDragStart(e, id) {
+  dragSrc = id;
+  e.dataTransfer.effectAllowed = 'move';
+  setTimeout(() => { const el = document.getElementById('idea-' + id); if (el) el.classList.add('dragging'); }, 0);
+}
+
+function onDragOver(e, id) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  document.querySelectorAll('.idea-row').forEach(el => el.classList.remove('drag-over'));
+  const el = document.getElementById('idea-' + id);
+  if (el && id !== dragSrc) el.classList.add('drag-over');
+}
+
+function onDrop(e, id) {
+  e.preventDefault();
+  if (!dragSrc || dragSrc === id) return;
+  const from = db.ideas.findIndex(i => i.id===dragSrc);
+  const to   = db.ideas.findIndex(i => i.id===id);
+  if (from === -1 || to === -1) return;
+  const [item] = db.ideas.splice(from, 1);
+  db.ideas.splice(to, 0, item);
+  save(); render();
+}
+
+function onDragEnd() {
+  dragSrc = null;
+  document.querySelectorAll('.idea-row').forEach(el => {
+    el.classList.remove('dragging', 'drag-over');
+  });
+}
+
+// ── EXPORT / IMPORT ────────────────────────────────────────
+
 function exportData() {
-  const total = db.youtube.length + db.libros.length;
+  const total = db.youtube.length + db.libros.length + db.ideas.length;
   if (!total) { toast('No hay datos que exportar'); return; }
   const now = new Date();
   const dateStr = now.toISOString().slice(0,10);
-  const blob = new Blob([JSON.stringify({version:1, exportedAt:now.toISOString(), data:db}, null, 2)], {type:'application/json'});
+  const blob = new Blob([JSON.stringify({version:2, exportedAt:now.toISOString(), data:db}, null, 2)], {type:'application/json'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url; a.download = 'publicaciones_backup_' + dateStr + '.json';
@@ -677,11 +911,12 @@ function importFile(e) {
     try {
       const parsed = JSON.parse(ev.target.result);
       if (!parsed.data?.youtube || !parsed.data?.libros) throw new Error();
+      if (!parsed.data.ideas) parsed.data.ideas = [];
       pending = parsed.data;
-      const ytN = parsed.data.youtube.length, libN = parsed.data.libros.length;
-      const ytC = db.youtube.length, libC = db.libros.length;
+      const ytN = parsed.data.youtube.length, libN = parsed.data.libros.length, idN = parsed.data.ideas.length;
+      const ytC = db.youtube.length, libC = db.libros.length, idC = db.ideas.length;
       document.getElementById('m-import-info').textContent =
-        `El archivo tiene ${ytN} vídeo(s) de YouTube y ${libN} publicación(es) de libros. Tú tienes ahora ${ytC} y ${libC} respectivamente.`;
+        `El archivo tiene ${ytN} vídeo(s), ${libN} publicación(es) de libros y ${idN} idea(s). Tú tienes ahora ${ytC}, ${libC} y ${idC} respectivamente.`;
       document.getElementById('m-import').classList.add('open');
     } catch { toast('Archivo no válido'); }
   };
@@ -695,7 +930,9 @@ function applyImport(mode) {
     toast('Datos reemplazados');
   } else {
     let added = 0;
-    ['youtube','libros'].forEach(k => {
+    ['youtube','libros','ideas'].forEach(k => {
+      if (!db[k]) db[k] = [];
+      if (!pending[k]) return;
       const ids = new Set(db[k].map(p => p.id));
       const news = pending[k].filter(p => !ids.has(p.id));
       db[k] = [...db[k], ...news];
@@ -704,11 +941,11 @@ function applyImport(mode) {
     toast(`Combinado: ${added} elemento(s) añadido(s)`);
   }
   pending = null;
-  openCards.clear();
-  save();
-  closeModal('m-import');
-  render();
+  openCards.clear(); openIdeas.clear();
+  save(); closeModal('m-import'); render();
 }
+
+// ── RENDER HELPERS ─────────────────────────────────────────
 
 function prog(pub) {
   const total = pub.tasks.length;
@@ -736,7 +973,6 @@ function renderCard(pub) {
   if (!el) return;
   const {total, done, pct} = prog(pub);
   const isOpen = openCards.has(pub.id);
-
   el.className = 'card' + (isOpen?' open':'') + (pub.archived?' archived':'');
 
   let sections = {}, sec = '';
@@ -781,14 +1017,74 @@ function renderCard(pub) {
     </div>`;
 }
 
+function renderIdea(idea) {
+  const el = document.getElementById('idea-' + idea.id);
+  if (!el) return;
+  const isOpen = openIdeas.has(idea.id);
+  el.className = 'idea-row' + (isOpen ? ' open' : '');
+
+  const linksHtml = (idea.links || []).map((lnk, idx) => `
+    <div class="link-row">
+      <input type="text" class="ilink-${idea.id}" value="${lnk.replace(/"/g,'&quot;')}" placeholder="https://..." onblur="saveIdeaFields('${idea.id}')">
+      <button class="btn btn-ghost btn-sm" onclick="removeLink('${idea.id}',${idx})" style="padding:4px 8px;color:var(--text-faint)">✕</button>
+    </div>`).join('');
+
+  el.innerHTML = `
+    <div class="idea-header" onclick="toggleIdea('${idea.id}')" draggable="false">
+      <span class="drag-handle" draggable="true"
+        ondragstart="onDragStart(event,'${idea.id}')"
+        ondragend="onDragEnd()"
+        onclick="event.stopPropagation()">⠿</span>
+      <div class="chevron">${CHV}</div>
+      <div class="idea-title">${idea.title}</div>
+    </div>
+    <div class="idea-body">
+      <div class="idea-field">
+        <label>Título</label>
+        <input type="text" id="ititle-${idea.id}" value="${idea.title.replace(/"/g,'&quot;')}" onblur="saveIdeaFields('${idea.id}')">
+      </div>
+      <div class="idea-field">
+        <label>Notas</label>
+        <textarea id="inotes-${idea.id}" rows="4" placeholder="Apuntes, referencias, contexto..." onblur="saveIdeaFields('${idea.id}')">${idea.notes||''}</textarea>
+      </div>
+      <div class="idea-field">
+        <label>Enlaces</label>
+        <div class="idea-links">${linksHtml}</div>
+        <button class="btn btn-ghost btn-sm" onclick="addLink('${idea.id}')">+ Añadir enlace</button>
+      </div>
+      <div class="idea-footer">
+        <div class="idea-footer-left">
+          <button class="btn btn-sm btn-purple" onclick="convertToProject('${idea.id}')">→ Convertir en proyecto YouTube</button>
+        </div>
+        <div class="idea-footer-right">
+          <button class="btn btn-ghost btn-sm" style="color:var(--warn-text)" onclick="deleteIdea('${idea.id}')">Eliminar</button>
+        </div>
+      </div>
+    </div>`;
+}
+
 function render() {
+  const ct = document.getElementById('content');
+
+  if (tab === 'ideas') {
+    if (!db.ideas.length) {
+      ct.innerHTML = `<div class="empty"><div class="empty-icon">◻</div><h3>Sin ideas todavía</h3><p>Pulsa "+ Idea" para añadir tu primera idea.</p></div>`;
+      return;
+    }
+    ct.innerHTML = `<div class="ideas-list" id="ideas-list">${db.ideas.map(i=>`<div class="idea-row" id="idea-${i.id}"
+      ondragover="onDragOver(event,'${i.id}')"
+      ondrop="onDrop(event,'${i.id}')"></div>`).join('')}</div>`;
+    db.ideas.forEach(i => renderIdea(i));
+    return;
+  }
+
   const list = [...(db[tab] || [])].sort((a,b) => {
     if (!a.date && !b.date) return 0;
     if (!a.date) return 1;
     if (!b.date) return -1;
     return a.date.localeCompare(b.date);
   });
-  const ct = document.getElementById('content');
+
   if (!list.length) {
     const tipo = tab==='youtube'?'vídeo de YouTube':'publicación de libro';
     ct.innerHTML = `<div class="empty"><div class="empty-icon">◻</div><h3>Ninguna publicación todavía</h3><p>Pulsa "+ Nueva" para crear tu primer ${tipo}.</p></div>`;
