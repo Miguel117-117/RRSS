@@ -930,7 +930,8 @@ function applyImport(mode) {
     toast('Datos reemplazados');
   } else {
     let added = 0;
-    ['youtube','libros','ideas'].forEach(k => {
+    // Projects: deduplicate by id
+    ['youtube','libros'].forEach(k => {
       if (!db[k]) db[k] = [];
       if (!pending[k]) return;
       const ids = new Set(db[k].map(p => p.id));
@@ -938,6 +939,16 @@ function applyImport(mode) {
       db[k] = [...db[k], ...news];
       added += news.length;
     });
+    // Ideas: deduplicate by title (ids may collide after seed)
+    if (!db.ideas) db.ideas = [];
+    if (pending.ideas && pending.ideas.length) {
+      const titles = new Set(db.ideas.map(i => i.title.trim().toLowerCase()));
+      const newIdeas = pending.ideas.filter(i => !titles.has(i.title.trim().toLowerCase()));
+      // Re-assign ids to avoid collisions
+      newIdeas.forEach(i => { i.id = 'idea_' + Date.now() + '_' + Math.random().toString(36).slice(2,6); });
+      db.ideas = [...db.ideas, ...newIdeas];
+      added += newIdeas.length;
+    }
     toast(`Combinado: ${added} elemento(s) añadido(s)`);
   }
   pending = null;
